@@ -16,7 +16,7 @@ articlesRouter
       .catch(next);
   })
   .post(jsonParser, (req, res, next) => {
-    const { title, content, style } = req.body;
+    const { title, content, style, author } = req.body;
     const newArticle = { title, content, style };
     for (const [key, value] of Object.entries(newArticle)) {
       if (value == null) {
@@ -25,6 +25,7 @@ articlesRouter
         });
       }
     }
+    newArticle.author = author;
     ArticlesService.insertArticle(req.app.get("db"), newArticle)
       .then((article) => {
         res
@@ -57,6 +58,7 @@ articlesRouter
       title: xss(res.article.title), // sanitize title
       content: xss(res.article.content), // sanitize content
       date_published: res.article.date_published,
+      author: article.author,
     });
   })
   .delete((req, res, next) => {
